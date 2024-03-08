@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="modal fade" id="pay" tabindex="-1" aria-labelledby="pay" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Qarzni kamaytirish</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/debtors" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="debt_user_id" name="user_id">
+                    <input type="hidden" value="decrement" name="type">
+                    <input type="text" class="form-control my-2" name="product" required placeholder="Xabar">
+                    <input type="number" class="form-control my-2" name="amount" required placeholder="Qarz summasi">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiqish</button>
+                    <button type="submit" class="btn btn-success">Qarzni to'lash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="new_debt" tabindex="-1" aria-labelledby="new_debt" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Yangi qarz rasmiylashtirish</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/debtors" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="debt_user_id" name="user_id">
+                    <input type="hidden" value="increment" name="type">
+                    <input type="text" class="form-control my-2" name="product" required placeholder="Xabar">
+                    <input type="number" class="form-control my-2" name="amount" required placeholder="Qarz summasi">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiqish</button>
+                    <button type="submit" class="btn btn-danger">Qarzga yozish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    {% if debtors %}
+    {% if users %}
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        {% for user in users %}
+        {% if user['total_debt'] != 0 %}
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 text-bg-primary border-primary">
+                    <h4 class="my-0 fw-normal">
+                        {{ user['fullname'] }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">{{ user['total_debt'] }} so'm</h1>
+
+                    <table class="table">
+                        <tr>
+                            <th>Telefon raqami:</th>
+                            <th>{{ user['phone'] }}</th>
+                        </tr>
+                    </table>
+
+                    <table class="table">
+                        <tr>
+                            <th>
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#pay" data-bs-user-id="{{ user['phone'] }}"
+                                    onclick="addID(this.getAttribute('data-bs-user-id'))">To'lov
+                                    qilish</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#new_debt"
+                                    data-bs-user-id="{{ user['phone'] }}"
+                                    onclick="addID(this.getAttribute('data-bs-user-id'))">Yangi qarz</button>
+                            </th>
+                            <th>
+                                <form action="/get_history_as_excel" method="POST">
+                                    <input type="hidden" name="user_id" value="{{ user['phone'] }}">
+                                    <button type="submit" class="btn btn-primary btn-small" type="submit"
+                                        class="text-decoration-none">Qarzlar tarixi</button>
+                                </form>
+                            </th>
+                        </tr>
+                    </table>
+                    <!-- <button class="w-100 btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#debtor">Qarzdor haqida</button> -->
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="px-4 py-5 my-5 text-center" style="margin: 140px 0 !important;">
+        <h1 class="display-5 fw-bold text-body-emphasis">Qarzdorlar mavjud emas!</h1>
+        <div class="col-lg-6 mx-auto">
+            <a href="/base" class="btn btn-danger btn-lg">Bazaga o'tish va yangi qarz qo'shish</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function addID(id) {
+        let all_elem = document.querySelectorAll("#debt_user_id")
+
+        for (let i = 0; i < all_elem.length; i++) {
+            all_elem[i].value = id
+        }
+    }
+</script>
+
+{% endblock %}

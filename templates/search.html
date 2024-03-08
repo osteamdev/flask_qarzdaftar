@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{% if session.get('user')['phone'] in ['+998913323431'] %}
+
+    <form action="/search" method="post">
+        <div class="input-group mb-3 container">
+            <input type="text" class="form-control w-50" name="search" placeholder="Qidirish" aria-label="Qidirish" aria-describedby="button-addon2">
+            <select name="type" id="type" class="form-select w-25">
+                <option value="phone">Telefon raqam orqali</option>
+                <option value="fullname">Ismi/Familiyasi orqali</option>
+                <option value="address">Manzil orqali</option>
+                <option value="date">Muddati orqali</option>
+            </select>
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Qidirish</button>
+        </div>
+    </form>
+
+    <div class="modal fade" id="new_debt" tabindex="-1" aria-labelledby="new_debt" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Yangi qarz rasmiylashtirish</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/base" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="debt_user_id" name="user_id">
+                        <input type="text" class="form-control my-2" name="product" required placeholder="Mahsulot nomi">
+                        <input type="number" class="form-control my-2" name="amount" required placeholder="Qarz summasi">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiqish</button>
+                        <button type="submit" class="btn btn-danger">Qarz qo'shish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <table class="table table-hover table-dark text-center">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">FIO</th>
+                    <th scope="col">Telefon raqami</th>
+                    <th scope="col">Manzili</th>
+                    <th scope="col">Qachondan mavjud?</th>
+                    <th scope="col">Hozirgi qarzdorligi</th>
+                    <th scope="col">Adminmi?</th>
+                    <th scope="col">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr class="align-middle">
+                        <th scope="row">{{ user['id'] }}</th>
+                        <td>{{ user['fullname'] }}</td>
+                        <td>{{ user['phone'] }}</td>
+                        <td>{{ user['address'] }}</td>
+                        <td>{{ user['registered_date'] }}</td>
+                        <td>{{ user['total_debt'] }} so'm</td>
+                        <td>{% if user['is_admin'] %}Admin{% else %}Foydalanuvchi{% endif %}</td>
+                        <td>
+                            <a href="#" type="button" class="btn btn-primary btn-small" data-bs-toggle="modal" data-bs-target="#new_debt" data-bs-user-id="{{ user['phone'] }}" onclick="addID(this.getAttribute('data-bs-user-id'))">Qarz qo'shish</a>
+                            <span> | </span>
+                            <form action="/get_history_as_excel" method="POST" class="d-inline">
+                                <input type="hidden" name="user_id" value="{{ user['phone'] }}">
+                                <button type="submit" class="btn btn-primary btn-small" type="submit" class="text-decoration-none">Tarix</button>
+                            </form>
+                        </td>
+                    <tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="container">
+        <table class="table table-hover table-dark text-center">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Xabar/Mahsulot</th>
+                    <th scope="col">Qiymati</th>
+                    <th scope="col">Bajarilgan sana</th>
+                    <th scope="col">Qarz oldi/berdi?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data %}
+                    {% for debt in data %}
+                        <tr class="align-middle">
+                            <th scope="row">{{ debt['id'] }}</th>
+                            <td>{{ debt['message'] }}</td>
+                            <td>{{ debt['amount'] }}</td>
+                            <td>{{ debt['date'] }}</td>
+                            <td>{{ debt['mode'] }}</td>
+                        <tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+<script>
+    function addID(id){
+        document.getElementById("debt_user_id").value = id
+    }
+</script>
+
+{% endblock %}

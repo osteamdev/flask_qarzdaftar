@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qarz daftar</title>
+
+    <!-- Static files -->
+    <link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/assets/css/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+    <div class="container">
+        <header
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <div class="col-md-3 mb-2 mb-md-0">
+                <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+                    <b>QARZ-DAFTAR</b>
+                </a>
+            </div>
+
+            {% if session.get('user') %}
+                {% if session.get('user')['phone'] in ['+998913323431'] %}
+                    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                        <li><a href="/" class="nav-link px-2">Bosh sahifa</a></li>
+                        <li><a href="/debtors" class="nav-link px-2">Faol qarzdorlar</a></li>
+                        <li><a href="/base" class="nav-link px-2">Baza</a></li>
+                        <li><a href="/users_base" class="nav-link px-2">Bazani yuklab olish</a></li>
+                    </ul>
+                    {% else %}
+                    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                        
+                        <li><a href="/" class="nav-link px-2">Bosh sahifa</a></li>
+                        <li><a href="/my_debts" class="nav-link px-2">Qarzlarim</a></li>
+                    </ul>
+                {% endif %}
+            {% endif %}
+
+            <div class="col-md-3 text-end">
+                    {% if session.get('user') %}
+                        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                            <li><a href="#" class="nav-link px-2">Xush kelibsiz {{ session.get('user')['fullname'] }}!</a></li>
+                            <li><a href="/logout" class="btn btn-primary px-2">Chiqish</a></li>
+                        </ul>
+                    {% else %}
+                        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                            <li><a href="/login" class="btn btn-primary px-2 me-2">Kirish</a></li>
+                            <li><a href="/register" class="btn btn-primary px-2">Ro'yxatdan o'tish</a></li>
+                        </ul>
+                    {% endif %}
+            </div>
+        </header>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <div class="container">
+            <p class="text-center text-body-secondary">© 2024 Macrosoft jamoasi</p>
+        </footer>
+    </div>
+
+    <script src="../static/assets/js/bootstrap.min.js"></script>
+</body>
+
+</html>
